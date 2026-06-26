@@ -90,6 +90,9 @@ public:
 	virtual bool UsesUncontrolledChangelists() const override;
 	virtual bool UsesSnapshots() const override;
 #endif
+#if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 8
+	virtual bool UsesSoftRevertOnDelete() const override;
+#endif
 #if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 3
 	virtual bool CanExecuteOperation( const FSourceControlOperationRef& InOperation ) const override;
 	virtual TMap<EStatus, FString> GetStatus() const override;

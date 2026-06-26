@@ -614,6 +614,13 @@ bool FGitSourceControlProvider::UsesSnapshots() const
 }
 #endif
 
+#if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 8
+bool FGitSourceControlProvider::UsesSoftRevertOnDelete() const
+{
+	return false;
+}
+#endif
+
 #if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 3
 bool FGitSourceControlProvider::CanExecuteOperation(const FSourceControlOperationRef& InOperation) const {
 	return WorkersMap.Find(InOperation->GetName()) != nullptr;
@@ -897,7 +904,7 @@ bool FGitSourceControlProvider::GetStateBranchAtIndex(int32 BranchIndex, FString
 {
 	auto StatusBranchNames = GetStatusBranchNames();
 
-	if (BranchIndex >= 0 && BranchIndex < StatusBranchNames.Num())
+	if (StatusBranchNames.IsValidIndex(BranchIndex))
 	{
 		OutBranchName = StatusBranchNames[BranchIndex];
 		return true;
@@ -940,7 +947,7 @@ int32 FGitSourceControlProvider::GetStateBranchIndex(const FString& StateBranchN
 TArray<FString> FGitSourceControlProvider::GetStatusBranchNames() const
 {
 	TArray<FString> StatusBranches;
-	if(PathToGitBinary.IsEmpty() || PathToRepositoryRoot.IsEmpty())
+	if (PathToGitBinary.IsEmpty() || PathToRepositoryRoot.IsEmpty())
 		return StatusBranches;
 	
 	for (int i = 0; i < StatusBranchNamePatternsInternal.Num(); i++)
